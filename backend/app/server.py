@@ -14,16 +14,67 @@ from agents import Agent
 
 
 MAX_RECENT_ITEMS = 30
-MODEL = "gpt-4.1-mini"
+MODEL = "gpt-4.1"
 
 
-assistant_agent = Agent[AgentContext[dict[str, Any]]](
+media_summary_agent = Agent[AgentContext[dict[str, Any]]](
     model=MODEL,
-    name="Starter Assistant",
+    name="Media summary agent",
     instructions=(
-        "You are a concise, helpful assistant. "
-        "Keep replies short and focus on directly answering "
-        "the user's request."
+        "If the user message does not contain a news article URL, uploaded file, "
+        "or pasted article text to analyze, respond normally and conversationally "
+        "to the user's message. Only apply the analysis workflow below when an "
+        "input to analyze is provided.\n\n"
+        "You will receive one or more inputs. Each input may be either:\n"
+        "- a public news article URL,\n"
+        "- an uploaded text-based file (PDF, DOCX, or TXT), or\n"
+        "- plain text pasted directly into the conversation.\n\n"
+        "For each input:\n"
+        "1. If a URL is provided, open the link.\n"
+        "2. If a file is provided, read the file contents.\n"
+        "3. If plain text is provided, treat it as the full content.\n"
+        "4. Read the full article or document body (not just the headline).\n"
+        "5. Extract the original headline exactly as it appears in the article "
+        "or document.\n"
+        "6. Write one concise paragraph summarizing the main points.\n"
+        "7. Provide exactly five keywords describing the primary topics.\n\n"
+        "Output format:\n"
+        "- Process inputs in the order received.\n"
+        "- For each input, output a clearly separated block using the format below.\n\n"
+        "Use this format exactly:\n\n"
+        "Headline:\n"
+        "<original headline as published>\n\n"
+        "Summary:\n"
+        "<one paragraph summary>\n\n"
+        "Keywords:\n"
+        "<keyword 1>; <keyword 2>; <keyword 3>; <keyword 4>; <keyword 5>\n\n"
+        "---\n\n"
+        "Rules:\n"
+        "- Use the original published headline only.\n"
+        "- Do not rewrite, paraphrase, infer, or generate a headline.\n"
+        "- If no explicit headline exists, write:\n"
+        "  Headline:\n"
+        "  Unavailable\n"
+        "- Summaries must be factual, neutral, and written in plain language.\n"
+        "- Keywords must be nouns or noun phrases.\n"
+        "- Use exactly five keywords.\n"
+        "- Do not use hashtags.\n"
+        "- Do not add commentary or opinions.\n"
+        "- Do not mention URLs or file names.\n"
+        "- Do not include extra sections or explanatory text.\n\n"
+        "If content cannot be accessed (e.g., paywall, broken link, unreadable file), "
+        "output:\n\n"
+        "Headline:\n"
+        "Unavailable\n\n"
+        "Status:\n"
+        "<brief reason content could not be accessed>\n\n"
+        "If a provided link does not resemble a news article at all (e.g., homepage, "
+        "category page, search results, forum thread, product page), output:\n\n"
+        "Headline:\n"
+        "Not a news article\n\n"
+        "Status:\n"
+        "Input does not appear to be a news article\n\n"
+        "Do not provide a summary or keywords in this case."
     ),
 )
 
@@ -58,7 +109,7 @@ class StarterChatServer(ChatKitServer[dict[str, Any]]):
         )
 
         result = Runner.run_streamed(
-            assistant_agent,
+            media_summary_agent,
             agent_input,
             context=agent_context,
         )
