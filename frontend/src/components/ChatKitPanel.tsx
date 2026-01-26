@@ -25,7 +25,20 @@ const options: ChatKitOptions = {
           style: "normal",
           display: "swap",
         },
-        // ...and 7 more font sources
+        {
+          family: "OpenAI Sans",
+          src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Medium.woff2",
+          weight: 500,
+          style: "normal",
+          display: "swap",
+        },
+        {
+          family: "OpenAI Sans",
+          src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Semibold.woff2",
+          weight: 600,
+          style: "normal",
+          display: "swap",
+        },
       ],
     },
   },
@@ -36,32 +49,11 @@ const options: ChatKitOptions = {
       maxCount: 5,
       maxSize: 10485760,
     },
-    tools: [
-      {
-        id: "search_docs",
-        label: "Search docs",
-        shortLabel: "Docs",
-        placeholderOverride: "Search documentation",
-        icon: "book-open",
-        pinned: false,
-      },
-      // ...and 1 more tool
-    ],
-    models: [
-      {
-        id: "gpt-5",
-        label: "gpt-5",
-        description: "Balanced intelligence",
-        default: true,
-      },
-      // ...and 3 more models
-    ],
   },
   startScreen: {
     greeting: "",
     prompts: [],
   },
-  // Optional fields not shown: locale, initialThread, threadItemActions, header, onClientTool, entities, widgets
 };
 
 export function ChatKitPanel() {
