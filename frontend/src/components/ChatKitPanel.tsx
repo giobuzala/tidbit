@@ -67,6 +67,12 @@ const baseOptions: ChatKitOptions = {
     showDelete: true,
     showRename: true,
   },
+  header: {
+    title: {
+      enabled: true,
+      text: "tidbit",
+    },
+  },
 };
 
 export function ChatKitPanel() {
