@@ -44,7 +44,7 @@ const baseOptions: ChatKitOptions = {
   },
   composer: {
     placeholder:
-      "Drop a news article link or document here, or attach it using the + on the left.",
+      "Paste a link or attach a document using the + on the left",
     attachments: {
       enabled: true,
       accept: {
@@ -103,12 +103,12 @@ export function ChatKitPanel() {
 
     const updateTooltip = () => {
       const addFilesButton = container.querySelector<HTMLButtonElement>(
-        'button[aria-label="Add files and more"]',
+        'button[aria-label*="Add files"], button[aria-label*="add files"]',
       );
 
       if (addFilesButton) {
         addFilesButton.setAttribute("data-tooltip", "Add files");
-        addFilesButton.removeAttribute("title");
+        addFilesButton.setAttribute("title", "Add files");
       }
     };
 
