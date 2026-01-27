@@ -12,9 +12,8 @@ import {
   setStoredThreadId,
 } from "../lib/session";
 
-const startScreenGreeting =
-  "Share an article or document. I’ll summarize it and extract keywords.";
-const startScreenSubline = "Supports news links, PDFs, and Word documents";
+const GREETING = "Get a concise summary and key topics instantly.";
+const SUBLINE = "Supports news links, PDFs, and Word documents";
 
 const baseOptions: ChatKitOptions = {
   api: {
@@ -47,15 +46,13 @@ const baseOptions: ChatKitOptions = {
     },
   },
   composer: {
-    placeholder:
-      "Paste a link or attach a document using the + on the left",
+    placeholder: "Paste a link or attach a document using the + on the left",
     attachments: {
       enabled: true,
       accept: {
         "application/pdf": [".pdf"],
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
-          ".docx",
-        ],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          [".docx"],
         "application/msword": [".doc"],
       },
       maxCount: 5,
@@ -63,7 +60,7 @@ const baseOptions: ChatKitOptions = {
     },
   },
   startScreen: {
-    greeting: startScreenGreeting,
+    greeting: GREETING,
     prompts: [],
   },
   history: {
@@ -72,9 +69,7 @@ const baseOptions: ChatKitOptions = {
     showRename: true,
   },
   header: {
-    title: {
-      enabled: false,
-    },
+    title: { enabled: false },
   },
 };
 
@@ -82,6 +77,7 @@ export function ChatKitPanel() {
   const panelRef = useRef<HTMLDivElement>(null);
   const sessionId = getOrCreateSessionId();
   const initialThread = getStoredThreadId();
+
   const chatkit = useChatKit({
     ...baseOptions,
     initialThread,
@@ -98,137 +94,45 @@ export function ChatKitPanel() {
     },
   });
 
+  // Inject subline below the greeting text
   useEffect(() => {
     const container = panelRef.current;
-    if (!container) {
-      return;
-    }
+    if (!container) return;
 
-    const tooltip = document.createElement("div");
-    tooltip.className = "chatkit-tooltip";
-    tooltip.textContent = "Add files";
-    tooltip.dataset.show = "false";
-    document.body.appendChild(tooltip);
-
-    let activeTarget: HTMLElement | null = null;
-
-    const isAddFilesButton = (element: HTMLElement) => {
-      if (element.tagName !== "BUTTON") {
-        return false;
-      }
-      const hasGhostVariant = element.getAttribute("data-variant") === "ghost";
-      const hasPrimaryColor = element.getAttribute("data-color") === "primary";
-      const hasSvg = element.querySelector("svg") !== null;
-      return hasGhostVariant && hasPrimaryColor && hasSvg;
-    };
-
-    const findTargetFromEvent = (event: Event) => {
-      const path = event.composedPath ? event.composedPath() : [];
-      for (const node of path) {
-        if (node instanceof HTMLElement) {
-          if (isAddFilesButton(node)) {
-            return node;
-          }
-          const button = node.closest?.("button");
-          if (button instanceof HTMLElement && isAddFilesButton(button)) {
-            return button;
-          }
+    const injectSubline = () => {
+      const elements = container.querySelectorAll<HTMLElement>(
+        "p, h1, h2, h3, div, span",
+      );
+      for (const el of elements) {
+        if (
+          el.textContent?.trim() === GREETING &&
+          el.dataset.sublineInjected !== "true"
+        ) {
+          el.dataset.sublineInjected = "true";
+          el.innerHTML =
+            `<span class="chatkit-greeting-line">${GREETING}</span>` +
+            `<span class="chatkit-greeting-subline">${SUBLINE}</span>`;
+          break;
         }
       }
-      return null;
     };
 
-    const showTooltip = (target: HTMLElement) => {
-      activeTarget = target;
-      const rect = target.getBoundingClientRect();
-      tooltip.style.left = `${rect.left + rect.width / 2}px`;
-      tooltip.style.top = `${rect.top}px`;
-      tooltip.dataset.show = "true";
-    };
-
-    const hideTooltip = () => {
-      activeTarget = null;
-      tooltip.dataset.show = "false";
-    };
-
-    const updateTooltip = () => {
-      if (!activeTarget) {
-        return;
-      }
-      showTooltip(activeTarget);
-    };
-
-    const handlePointerOver = (event: PointerEvent) => {
-      const target = findTargetFromEvent(event);
-      if (!target) {
-        return;
-      }
-      showTooltip(target);
-    };
-
-    const handlePointerOut = (event: PointerEvent) => {
-      if (!activeTarget) {
-        return;
-      }
-      const related = event.relatedTarget as Node | null;
-      if (related && activeTarget.contains(related)) {
-        return;
-      }
-      hideTooltip();
-    };
-
-    const updateStartScreen = () => {
-      const candidates = Array.from(
-        container.querySelectorAll<HTMLElement>("p, h1, h2, h3, div, span"),
-      );
-      const greetingElement = candidates.find(
-        (element) => element.textContent?.trim() === startScreenGreeting,
-      );
-
-      if (greetingElement && greetingElement.dataset.sublineInjected !== "true") {
-        greetingElement.dataset.sublineInjected = "true";
-        greetingElement.innerHTML =
-          `<span class="chatkit-greeting-line">${startScreenGreeting}</span>` +
-          `<span class="chatkit-greeting-subline">${startScreenSubline}</span>`;
-      }
-    };
-
-    const updateUi = () => {
-      updateStartScreen();
-      updateTooltip();
-    };
-
-    updateUi();
-    const observer = new MutationObserver(updateUi);
+    injectSubline();
+    const observer = new MutationObserver(injectSubline);
     observer.observe(container, { childList: true, subtree: true });
-    document.addEventListener("pointerover", handlePointerOver, true);
-    document.addEventListener("pointerout", handlePointerOut, true);
-    window.addEventListener("scroll", updateTooltip, true);
-    window.addEventListener("resize", updateTooltip);
 
-    return () => {
-      observer.disconnect();
-      document.removeEventListener("pointerover", handlePointerOver, true);
-      document.removeEventListener("pointerout", handlePointerOut, true);
-      window.removeEventListener("scroll", updateTooltip, true);
-      window.removeEventListener("resize", updateTooltip);
-      tooltip.remove();
-    };
+    return () => observer.disconnect();
   }, []);
 
   return (
     <div
       ref={panelRef}
-      className="relative flex h-full w-full flex-col overflow-hidden bg-[#212121] transition-colors"
+      className="relative flex h-full w-full flex-col overflow-hidden bg-[#212121]"
     >
-      <div className="flex items-center gap-2 border-b border-[#303030] bg-[#303030] px-6 py-4 text-[#dcdcdc]">
-        <div className="flex flex-col">
-          <div className="text-[2.5rem] font-semibold leading-none">tidbit</div>
-          <div className="mt-1 text-base font-normal">
-            bite-sized news summaries
-          </div>
-        </div>
-      </div>
+      <header className="flex flex-col border-b border-[#303030] bg-[#303030] px-6 py-4 text-[#dcdcdc]">
+        <h1 className="text-[2.5rem] font-semibold leading-none">tidbit</h1>
+        <p className="mt-1 text-base font-normal">bite-sized news summaries</p>
+      </header>
       <ChatKit control={chatkit.control} className="block h-full w-full" />
     </div>
   );
