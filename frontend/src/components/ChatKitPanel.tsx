@@ -12,6 +12,10 @@ import {
   setStoredThreadId,
 } from "../lib/session";
 
+const startScreenGreeting =
+  "Share an article or document. I’ll summarize it and extract keywords.";
+const startScreenSubline = "Supports news links, PDFs, and Word documents";
+
 const baseOptions: ChatKitOptions = {
   api: {
     url: CHATKIT_API_URL,
@@ -59,8 +63,7 @@ const baseOptions: ChatKitOptions = {
     },
   },
   startScreen: {
-    greeting:
-      "Share an article or document. I’ll summarize it and extract keywords.",
+    greeting: startScreenGreeting,
     prompts: [],
   },
   history: {
@@ -112,8 +115,29 @@ export function ChatKitPanel() {
       }
     };
 
-    updateTooltip();
-    const observer = new MutationObserver(updateTooltip);
+    const updateStartScreen = () => {
+      const candidates = Array.from(
+        container.querySelectorAll<HTMLElement>("p, h1, h2, h3, div, span"),
+      );
+      const greetingElement = candidates.find(
+        (element) => element.textContent?.trim() === startScreenGreeting,
+      );
+
+      if (greetingElement && greetingElement.dataset.sublineInjected !== "true") {
+        greetingElement.dataset.sublineInjected = "true";
+        greetingElement.innerHTML =
+          `<span class="chatkit-greeting-line">${startScreenGreeting}</span>` +
+          `<span class="chatkit-greeting-subline">${startScreenSubline}</span>`;
+      }
+    };
+
+    const updateUi = () => {
+      updateTooltip();
+      updateStartScreen();
+    };
+
+    updateUi();
+    const observer = new MutationObserver(updateUi);
     observer.observe(container, { childList: true, subtree: true });
 
     return () => observer.disconnect();
@@ -124,8 +148,11 @@ export function ChatKitPanel() {
       ref={panelRef}
       className="relative flex h-full w-full flex-col overflow-hidden bg-[#212121] transition-colors"
     >
-      <div className="flex items-center gap-2 border-b border-[#303030] bg-[#303030] px-6 py-4 text-[2.5rem] font-semibold text-[#dcdcdc]">
-        tidbit
+      <div className="flex items-center gap-2 border-b border-[#303030] bg-[#303030] px-6 py-4 text-[#dcdcdc]">
+        <div className="flex flex-col">
+          <div className="text-[2.5rem] font-semibold">tidbit</div>
+          <div className="text-base font-normal">bite-sized news summaries</div>
+        </div>
       </div>
       <ChatKit control={chatkit.control} className="block h-full w-full" />
     </div>
