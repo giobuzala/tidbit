@@ -43,17 +43,6 @@ body {
   }
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* ============================================
    Main Container
    ============================================ */
@@ -160,52 +149,6 @@ body {
   flex: 1;
   overflow: hidden;
   animation: fadeIn 0.3s ease-out 0.15s both;
-}
-
-/* ============================================
-   ChatKit Greeting Customization
-   ============================================ */
-.chatkit-greeting-enhanced {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.chatkit-greeting-line {
-  display: block;
-  text-align: center;
-}
-
-.chatkit-greeting-badges {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  animation: fadeInUp 0.4s ease-out 0.2s both;
-}
-
-.greeting-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  transition: all 0.15s ease;
-}
-
-.greeting-badge:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-}
-
-.greeting-badge svg {
-  opacity: 0.7;
 }
 
 /* ============================================
