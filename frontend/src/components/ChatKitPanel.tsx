@@ -63,7 +63,7 @@ export function ChatKitPanel() {
   const chatkit = useChatKit(options);
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col overflow-hidden bg-white transition-colors dark:bg-slate-900">
+    <div className="relative flex h-full w-full flex-col overflow-hidden bg-white transition-colors dark:bg-slate-900">
       <ChatKit control={chatkit.control} className="block h-full w-full" />
     </div>
   );
