@@ -25,7 +25,7 @@ const baseOptions: ChatKitOptions = {
     radius: "pill",
     density: "normal",
     typography: {
-      baseSize: 16,
+      baseSize: 18,
       fontFamily:
         '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
       fontFamilyMono:
@@ -38,7 +38,6 @@ const baseOptions: ChatKitOptions = {
           style: "normal",
           display: "swap",
         },
-        // ...and 7 more font sources
       ],
     },
   },
