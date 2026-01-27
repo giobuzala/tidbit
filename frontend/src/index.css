@@ -1,32 +1,26 @@
 @import "tailwindcss";
 
+/* ============================================
+   CSS Variables
+   ============================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  color-scheme: light;
+  --accent: #ff6b6b;
+  --accent-light: #ff8a8a;
+  --accent-dark: #ee5a5a;
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-surface: #1e1e30;
+  --bg-elevated: #252540;
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-accent: rgba(255, 107, 107, 0.3);
 }
 
-:root[data-color-scheme="dark"] {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  color-scheme: dark;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-color-scheme]) {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    color-scheme: dark;
-  }
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: Arial, Helvetica, sans-serif;
-  --font-mono: SFMono-Regular, Consolas, "Liberation Mono", monospace;
-}
-
+/* ============================================
+   Base Styles
+   ============================================ */
 html,
 body,
 #root {
@@ -34,20 +28,260 @@ body,
 }
 
 body {
-  background: #212121;
-  color: var(--foreground);
-  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: "OpenAI Sans", system-ui, -apple-system, sans-serif;
 }
 
-/* ChatKit greeting customization */
+/* ============================================
+   Animations
+   ============================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 107, 107, 0.4);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================
+   Main Container
+   ============================================ */
+.tidbit-container {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+}
+
+/* ============================================
+   Header
+   ============================================ */
+.tidbit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 107, 107, 0.08) 0%,
+    transparent 100%
+  );
+  border-bottom: 1px solid var(--border-subtle);
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo-container {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  animation: pulse-glow 3s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.logo-container:hover {
+  transform: scale(1.05);
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.header-title {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+}
+
+.header-tagline {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* ============================================
+   Format Badges (Header)
+   ============================================ */
+.format-badges {
+  display: flex;
+  gap: 8px;
+  animation: fadeInUp 0.5s ease-out 0.1s both;
+}
+
+.format-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.format-badge:hover {
+  border-color: var(--border-accent);
+  color: var(--accent-light);
+  transform: translateY(-1px);
+}
+
+.format-badge svg {
+  opacity: 0.7;
+}
+
+/* ============================================
+   Chat Area
+   ============================================ */
+.tidbit-chat-area {
+  flex: 1;
+  overflow: hidden;
+  animation: fadeInUp 0.5s ease-out 0.2s both;
+}
+
+/* ============================================
+   ChatKit Greeting Customization
+   ============================================ */
+.chatkit-greeting-enhanced {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
 .chatkit-greeting-line {
   display: block;
+  text-align: center;
+  animation: fadeInUp 0.6s ease-out;
 }
 
-.chatkit-greeting-subline {
-  display: block;
-  margin-top: 6px;
-  color: #a3a3a3;
-  font-size: 0.9rem;
-  font-weight: 400;
+.chatkit-greeting-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+.greeting-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid var(--border-accent);
+  border-radius: 24px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--accent-light);
+  transition: all 0.2s ease;
+}
+
+.greeting-badge:hover {
+  background: rgba(255, 107, 107, 0.2);
+  transform: translateY(-2px);
+}
+
+.greeting-badge svg {
+  opacity: 0.9;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 768px) {
+  .tidbit-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+  }
+
+  .format-badges {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .header-title {
+    font-size: 1.75rem;
+  }
+
+  .logo-container {
+    width: 44px;
+    height: 44px;
+  }
+
+  .logo-container svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .chatkit-greeting-badges {
+    gap: 8px;
+  }
+
+  .greeting-badge {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .format-badges {
+    display: none;
+  }
+
+  .header-title {
+    font-size: 1.5rem;
+  }
 }

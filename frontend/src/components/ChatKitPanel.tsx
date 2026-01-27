@@ -14,7 +14,6 @@ import {
 
 const GREETING =
   "Share an article or document. Get a concise summary and key topics instantly.";
-const SUBLINE = "Supports news links, PDFs, and Word documents";
 
 const baseOptions: ChatKitOptions = {
   api: {
@@ -74,6 +73,53 @@ const baseOptions: ChatKitOptions = {
   },
 };
 
+function Logo() {
+  return (
+    <div className="logo-container">
+      <svg
+        width="44"
+        height="44"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+        <path d="M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        <path d="M9 12h6" />
+        <path d="M9 16h6" />
+      </svg>
+    </div>
+  );
+}
+
+function FormatBadges() {
+  return (
+    <div className="format-badges">
+      <span className="format-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+        </svg>
+        URL
+      </span>
+      <span className="format-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z" />
+        </svg>
+        PDF
+      </span>
+      <span className="format-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+        </svg>
+        DOC
+      </span>
+    </div>
+  );
+}
+
 export function ChatKitPanel() {
   const panelRef = useRef<HTMLDivElement>(null);
   const sessionId = getOrCreateSessionId();
@@ -95,31 +141,52 @@ export function ChatKitPanel() {
     },
   });
 
-  // Inject subline below the greeting text
+  // Inject format badges below the greeting text
   useEffect(() => {
     const container = panelRef.current;
     if (!container) return;
 
-    const injectSubline = () => {
+    const injectBadges = () => {
       const elements = container.querySelectorAll<HTMLElement>(
         "p, h1, h2, h3, div, span",
       );
       for (const el of elements) {
         if (
           el.textContent?.trim() === GREETING &&
-          el.dataset.sublineInjected !== "true"
+          el.dataset.badgesInjected !== "true"
         ) {
-          el.dataset.sublineInjected = "true";
-          el.innerHTML =
-            `<span class="chatkit-greeting-line">${GREETING}</span>` +
-            `<span class="chatkit-greeting-subline">${SUBLINE}</span>`;
+          el.dataset.badgesInjected = "true";
+          el.classList.add("chatkit-greeting-enhanced");
+          el.innerHTML = `
+            <span class="chatkit-greeting-line">${GREETING}</span>
+            <span class="chatkit-greeting-badges">
+              <span class="greeting-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                </svg>
+                News Links
+              </span>
+              <span class="greeting-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/>
+                </svg>
+                PDFs
+              </span>
+              <span class="greeting-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                </svg>
+                Word Docs
+              </span>
+            </span>
+          `;
           break;
         }
       }
     };
 
-    injectSubline();
-    const observer = new MutationObserver(injectSubline);
+    injectBadges();
+    const observer = new MutationObserver(injectBadges);
     observer.observe(container, { childList: true, subtree: true });
 
     return () => observer.disconnect();
@@ -128,13 +195,21 @@ export function ChatKitPanel() {
   return (
     <div
       ref={panelRef}
-      className="relative flex h-full w-full flex-col overflow-hidden bg-[#212121]"
+      className="tidbit-container relative flex h-full w-full flex-col overflow-hidden"
     >
-      <header className="flex flex-col border-b border-[#303030] bg-[#303030] px-6 py-4 text-[#dcdcdc]">
-        <h1 className="text-[2.5rem] font-semibold leading-none">tidbit</h1>
-        <p className="mt-1 text-base font-normal">bite-sized news summaries</p>
+      <header className="tidbit-header">
+        <div className="header-content">
+          <Logo />
+          <div className="header-text">
+            <h1 className="header-title">tidbit</h1>
+            <p className="header-tagline">bite-sized news summaries</p>
+          </div>
+        </div>
+        <FormatBadges />
       </header>
-      <ChatKit control={chatkit.control} className="block h-full w-full" />
+      <div className="tidbit-chat-area">
+        <ChatKit control={chatkit.control} className="block h-full w-full" />
+      </div>
     </div>
   );
 }
