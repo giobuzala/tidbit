@@ -1,5 +1,6 @@
 import type { ChatKitOptions } from "@openai/chatkit";
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
+import { useEffect, useRef } from "react";
 import {
   CHATKIT_API_DOMAIN_KEY,
   CHATKIT_API_UPLOAD_URL,
@@ -75,6 +76,7 @@ const baseOptions: ChatKitOptions = {
 };
 
 export function ChatKitPanel() {
+  const panelRef = useRef<HTMLDivElement>(null);
   const sessionId = getOrCreateSessionId();
   const initialThread = getStoredThreadId();
   const chatkit = useChatKit({
@@ -93,8 +95,35 @@ export function ChatKitPanel() {
     },
   });
 
+  useEffect(() => {
+    const container = panelRef.current;
+    if (!container) {
+      return;
+    }
+
+    const updateTooltip = () => {
+      const addFilesButton = container.querySelector<HTMLButtonElement>(
+        'button[aria-label="Add files and more"]',
+      );
+
+      if (addFilesButton) {
+        addFilesButton.setAttribute("data-tooltip", "Add files");
+        addFilesButton.removeAttribute("title");
+      }
+    };
+
+    updateTooltip();
+    const observer = new MutationObserver(updateTooltip);
+    observer.observe(container, { childList: true, subtree: true });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#212121] transition-colors">
+    <div
+      ref={panelRef}
+      className="relative flex h-full w-full flex-col overflow-hidden bg-[#212121] transition-colors"
+    >
       <div className="flex items-center gap-2 border-b border-[#303030] bg-[#303030] px-6 py-4 text-[2.5rem] font-semibold text-[#dcdcdc]">
         tidbit
       </div>
