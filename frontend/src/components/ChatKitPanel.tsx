@@ -104,14 +104,43 @@ export function ChatKitPanel() {
       return;
     }
 
+    const findAddFilesButton = () => {
+      const selectors = [
+        'button[aria-label*="Add files"]',
+        'button[aria-label*="add files"]',
+        'button[title*="Add files"]',
+        'button[title*="add files"]',
+      ];
+      const roots: ParentNode[] = [document, container];
+      const scanForShadowRoots = (root: ParentNode) => {
+        root.querySelectorAll?.("*").forEach((element) => {
+          const shadowRoot = (element as HTMLElement).shadowRoot;
+          if (shadowRoot) {
+            roots.push(shadowRoot);
+          }
+        });
+      };
+
+      roots.forEach(scanForShadowRoots);
+
+      for (const root of roots) {
+        for (const selector of selectors) {
+          const button = root.querySelector<HTMLButtonElement>(selector);
+          if (button) {
+            return button;
+          }
+        }
+      }
+      return null;
+    };
+
     const updateTooltip = () => {
-      const addFilesButton = container.querySelector<HTMLButtonElement>(
-        'button[aria-label*="Add files"], button[aria-label*="add files"]',
-      );
+      const addFilesButton = findAddFilesButton();
 
       if (addFilesButton) {
         addFilesButton.setAttribute("data-tooltip", "Add files");
         addFilesButton.setAttribute("title", "Add files");
+        addFilesButton.setAttribute("aria-label", "Add files");
       }
     };
 
@@ -150,8 +179,10 @@ export function ChatKitPanel() {
     >
       <div className="flex items-center gap-2 border-b border-[#303030] bg-[#303030] px-6 py-4 text-[#dcdcdc]">
         <div className="flex flex-col">
-          <div className="text-[2.5rem] font-semibold">tidbit</div>
-          <div className="text-base font-normal">bite-sized news summaries</div>
+          <div className="text-[2.5rem] font-semibold leading-none">tidbit</div>
+          <div className="-mt-1 text-base font-normal">
+            bite-sized news summaries
+          </div>
         </div>
       </div>
       <ChatKit control={chatkit.control} className="block h-full w-full" />
