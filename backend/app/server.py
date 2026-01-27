@@ -2,12 +2,18 @@
 
 from __future__ import annotations
 
+import base64
 from typing import Any, AsyncIterator
 
 from agents import RunConfig, Runner
-from chatkit.agents import AgentContext, simple_to_agent_input, stream_agent_response
+from chatkit.agents import (
+    AgentContext,
+    ThreadItemConverter,
+    stream_agent_response,
+)
 from chatkit.server import ChatKitServer
-from chatkit.types import ThreadMetadata, ThreadStreamEvent, UserMessageItem
+from chatkit.types import Attachment, ThreadMetadata, ThreadStreamEvent, UserMessageItem
+from openai.types.responses import ResponseInputFileParam
 
 from .memory_store import MemoryStore
 from agents import Agent
@@ -84,6 +90,7 @@ class StarterChatServer(ChatKitServer[dict[str, Any]]):
 
     def __init__(self) -> None:
         self.store: MemoryStore = MemoryStore()
+        self.converter = StarterThreadItemConverter(self.store)
         super().__init__(self.store)
 
     async def respond(
@@ -100,7 +107,7 @@ class StarterChatServer(ChatKitServer[dict[str, Any]]):
             context=context,
         )
         items = list(reversed(items_page.data))
-        agent_input = await simple_to_agent_input(items)
+        agent_input = await self.converter.to_agent_input(items)
 
         agent_context = AgentContext(
             thread=thread,
@@ -122,3 +129,25 @@ class StarterChatServer(ChatKitServer[dict[str, Any]]):
 
         async for event in stream_agent_response(agent_context, result):
             yield event
+
+
+def _as_data_url(mime_type: str, content: bytes) -> str:
+    encoded = base64.b64encode(content).decode("utf-8")
+    return f"data:{mime_type};base64,{encoded}"
+
+
+class StarterThreadItemConverter(ThreadItemConverter):
+    def __init__(self, store: MemoryStore) -> None:
+        self.store = store
+
+    async def attachment_to_message_content(
+        self, attachment: Attachment
+    ) -> ResponseInputFileParam:
+        content = await self.store.load_attachment_bytes(attachment.id)
+        if attachment.mime_type != "application/pdf":
+            raise ValueError("Only PDF attachments are supported.")
+        return ResponseInputFileParam(
+            type="input_file",
+            file_data=_as_data_url(attachment.mime_type, content),
+            filename=attachment.name or "document.pdf",
+        )

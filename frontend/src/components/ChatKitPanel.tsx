@@ -1,11 +1,19 @@
 import type { ChatKitOptions } from "@openai/chatkit";
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
-import { CHATKIT_API_DOMAIN_KEY, CHATKIT_API_URL } from "../lib/config";
+import {
+  CHATKIT_API_DOMAIN_KEY,
+  CHATKIT_API_UPLOAD_URL,
+  CHATKIT_API_URL,
+} from "../lib/config";
 
 const options: ChatKitOptions = {
   api: {
     url: CHATKIT_API_URL,
     domainKey: CHATKIT_API_DOMAIN_KEY,
+    uploadStrategy: {
+      type: "direct",
+      uploadUrl: CHATKIT_API_UPLOAD_URL,
+    },
   },
   theme: {
     colorScheme: "dark",
@@ -25,33 +33,24 @@ const options: ChatKitOptions = {
           style: "normal",
           display: "swap",
         },
-        {
-          family: "OpenAI Sans",
-          src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Medium.woff2",
-          weight: 500,
-          style: "normal",
-          display: "swap",
-        },
-        {
-          family: "OpenAI Sans",
-          src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Semibold.woff2",
-          weight: 600,
-          style: "normal",
-          display: "swap",
-        },
+        // ...and 7 more font sources
       ],
     },
   },
   composer: {
+    placeholder: "Drop a news article link or document here",
     attachments: {
-      // Enable only when api.uploadStrategy is configured.
-      enabled: false,
+      enabled: true,
+      accept: {
+        "application/pdf": [".pdf"],
+      },
       maxCount: 5,
       maxSize: 10485760,
     },
   },
   startScreen: {
-    greeting: "",
+    greeting:
+      "Share an article or document and I’ll summarize it and extract keywords.",
     prompts: [],
   },
 };
