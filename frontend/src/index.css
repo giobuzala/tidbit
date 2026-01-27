@@ -69,7 +69,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px 20px;
+  padding: 20px 24px;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-subtle);
   animation: fadeIn 0.3s ease-out;
@@ -78,14 +78,14 @@ body {
 .header-content {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
 .logo-container {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   background: var(--accent);
-  border-radius: 10px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -98,25 +98,25 @@ body {
 }
 
 .logo-container svg {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
 }
 
 .header-text {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
 }
 
 .header-title {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-primary);
   line-height: 1.2;
 }
 
 .header-tagline {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   color: var(--text-secondary);
   font-weight: 400;
 }
@@ -133,12 +133,12 @@ body {
 .format-badge {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 6px 10px;
+  gap: 6px;
+  padding: 8px 12px;
   background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  font-size: 0.7rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
   font-weight: 500;
   color: var(--text-secondary);
   transition: all 0.15s ease;
