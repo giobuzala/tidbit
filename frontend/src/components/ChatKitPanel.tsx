@@ -93,8 +93,8 @@ export function ChatKitPanel() {
   });
 
   return (
-    <div className="relative flex h-full w-full flex-col overflow-hidden bg-white transition-colors dark:bg-slate-900">
-      <div className="flex items-center gap-2 border-b border-slate-200 bg-white px-6 py-4 text-2xl font-semibold text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100">
+    <div className="relative flex h-full w-full flex-col overflow-hidden bg-slate-900 transition-colors">
+      <div className="flex items-center gap-2 border-b border-slate-800 bg-slate-900 px-6 py-4 text-2xl font-semibold text-slate-100">
         tidbit
       </div>
       <ChatKit control={chatkit.control} className="block h-full w-full" />
