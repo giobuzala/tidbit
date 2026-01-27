@@ -1,21 +1,19 @@
 @import "tailwindcss";
 
 /* ============================================
-   CSS Variables
+   CSS Variables - ChatGPT-style dark theme
    ============================================ */
 :root {
-  --accent: #ff6b6b;
-  --accent-light: #ff8a8a;
-  --accent-dark: #ee5a5a;
-  --bg-primary: #1a1a2e;
-  --bg-secondary: #16213e;
-  --bg-surface: #1e1e30;
-  --bg-elevated: #252540;
-  --text-primary: #ffffff;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-accent: rgba(255, 107, 107, 0.3);
+  --bg-primary: #212121;
+  --bg-secondary: #2f2f2f;
+  --bg-elevated: #424242;
+  --bg-hover: #3a3a3a;
+  --text-primary: #ececec;
+  --text-secondary: #b4b4b4;
+  --text-muted: #8e8e8e;
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --accent: #10a37f;
+  --accent-hover: #1a7f64;
 }
 
 /* ============================================
@@ -36,10 +34,19 @@ body {
 /* ============================================
    Animations
    ============================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -47,40 +54,11 @@ body {
   }
 }
 
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
-  }
-}
-
-@keyframes pulse-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(255, 107, 107, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(255, 107, 107, 0.4);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
 /* ============================================
    Main Container
    ============================================ */
 .tidbit-container {
-  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  background: var(--bg-primary);
 }
 
 /* ============================================
@@ -91,57 +69,54 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 20px 24px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 107, 107, 0.08) 0%,
-    transparent 100%
-  );
+  padding: 16px 20px;
+  background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-subtle);
-  animation: fadeInUp 0.5s ease-out;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .logo-container {
-  width: 52px;
-  height: 52px;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-  border-radius: 14px;
+  width: 40px;
+  height: 40px;
+  background: var(--accent);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  animation: pulse-glow 3s ease-in-out infinite;
-  transition: transform 0.3s ease;
+  transition: background 0.2s ease;
 }
 
 .logo-container:hover {
-  transform: scale(1.05);
+  background: var(--accent-hover);
+}
+
+.logo-container svg {
+  width: 24px;
+  height: 24px;
 }
 
 .header-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .header-title {
-  font-size: 2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1.1;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
 }
 
 .header-tagline {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
   font-weight: 400;
 }
@@ -152,27 +127,26 @@ body {
 .format-badges {
   display: flex;
   gap: 8px;
-  animation: fadeInUp 0.5s ease-out 0.1s both;
+  animation: fadeIn 0.3s ease-out 0.1s both;
 }
 
 .format-badge {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 5px;
+  padding: 6px 10px;
   background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
-  border-radius: 20px;
-  font-size: 0.75rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
   font-weight: 500;
   color: var(--text-secondary);
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .format-badge:hover {
-  border-color: var(--border-accent);
-  color: var(--accent-light);
-  transform: translateY(-1px);
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .format-badge svg {
@@ -185,7 +159,7 @@ body {
 .tidbit-chat-area {
   flex: 1;
   overflow: hidden;
-  animation: fadeInUp 0.5s ease-out 0.2s both;
+  animation: fadeIn 0.3s ease-out 0.15s both;
 }
 
 /* ============================================
@@ -195,44 +169,43 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .chatkit-greeting-line {
   display: block;
   text-align: center;
-  animation: fadeInUp 0.6s ease-out;
 }
 
 .chatkit-greeting-badges {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  animation: fadeInUp 0.6s ease-out 0.2s both;
+  gap: 8px;
+  animation: fadeInUp 0.4s ease-out 0.2s both;
 }
 
 .greeting-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
-  background: rgba(255, 107, 107, 0.1);
-  border: 1px solid var(--border-accent);
-  border-radius: 24px;
+  padding: 8px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--accent-light);
-  transition: all 0.2s ease;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
 }
 
 .greeting-badge:hover {
-  background: rgba(255, 107, 107, 0.2);
-  transform: translateY(-2px);
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .greeting-badge svg {
-  opacity: 0.9;
+  opacity: 0.7;
 }
 
 /* ============================================
@@ -242,8 +215,8 @@ body {
   .tidbit-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
-    padding: 16px 20px;
+    gap: 12px;
+    padding: 14px 16px;
   }
 
   .format-badges {
@@ -253,35 +226,22 @@ body {
   }
 
   .header-title {
-    font-size: 1.75rem;
+    font-size: 1.1rem;
   }
 
   .logo-container {
-    width: 44px;
-    height: 44px;
-  }
-
-  .logo-container svg {
     width: 36px;
     height: 36px;
   }
 
-  .chatkit-greeting-badges {
-    gap: 8px;
-  }
-
-  .greeting-badge {
-    padding: 6px 12px;
-    font-size: 0.8rem;
+  .logo-container svg {
+    width: 20px;
+    height: 20px;
   }
 }
 
 @media (max-width: 480px) {
   .format-badges {
     display: none;
-  }
-
-  .header-title {
-    font-size: 1.5rem;
   }
 }
