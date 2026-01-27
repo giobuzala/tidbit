@@ -13,7 +13,7 @@ import {
 } from "../lib/session";
 
 const GREETING =
-  "Share an article or document. Get a concise summary and key topics instantly.";
+  "Share a news article. Get a summary and key topics.";
 
 const baseOptions: ChatKitOptions = {
   api: {
@@ -46,7 +46,7 @@ const baseOptions: ChatKitOptions = {
     },
   },
   composer: {
-    placeholder: "Paste a link or attach a document using the + on the left",
+    placeholder: "Paste a link or attach a document",
     attachments: {
       enabled: true,
       accept: {
@@ -104,6 +104,12 @@ function FormatBadges() {
       </span>
       <span className="format-badge">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15h8v2H8v-2zm0-4h8v2H8v-2z" />
+        </svg>
+        TEXT
+      </span>
+      <span className="format-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
           <path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z" />
         </svg>
         PDF
@@ -139,7 +145,7 @@ export function ChatKitPanel() {
     },
   });
 
-  // Inject format badges below the greeting text
+  // Inject badges below the greeting text
   useEffect(() => {
     const container = panelRef.current;
     if (!container) return;
@@ -163,6 +169,12 @@ export function ChatKitPanel() {
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
                 </svg>
                 News Links
+              </span>
+              <span class="greeting-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15h8v2H8v-2zm0-4h8v2H8v-2z"/>
+                </svg>
+                Plain Text
               </span>
               <span class="greeting-badge">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
