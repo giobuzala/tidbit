@@ -104,44 +104,69 @@ export function ChatKitPanel() {
       return;
     }
 
-    const findAddFilesButton = () => {
-      const selectors = [
-        'button[aria-label*="Add files"]',
-        'button[aria-label*="add files"]',
-        'button[title*="Add files"]',
-        'button[title*="add files"]',
-      ];
-      const roots: ParentNode[] = [document, container];
-      const scanForShadowRoots = (root: ParentNode) => {
-        root.querySelectorAll?.("*").forEach((element) => {
-          const shadowRoot = (element as HTMLElement).shadowRoot;
-          if (shadowRoot) {
-            roots.push(shadowRoot);
-          }
-        });
-      };
+    const tooltip = document.createElement("div");
+    tooltip.className = "chatkit-tooltip";
+    tooltip.textContent = "Add files";
+    tooltip.dataset.show = "false";
+    document.body.appendChild(tooltip);
 
-      roots.forEach(scanForShadowRoots);
+    let activeTarget: HTMLElement | null = null;
 
-      for (const root of roots) {
-        for (const selector of selectors) {
-          const button = root.querySelector<HTMLButtonElement>(selector);
-          if (button) {
-            return button;
-          }
+    const isAddFilesTarget = (element: HTMLElement) => {
+      const label =
+        element.getAttribute("aria-label") ?? element.getAttribute("title") ?? "";
+      return label.toLowerCase().includes("add files");
+    };
+
+    const findTargetFromEvent = (event: Event) => {
+      const path = event.composedPath ? event.composedPath() : [];
+      for (const node of path) {
+        if (node instanceof HTMLElement && isAddFilesTarget(node)) {
+          return node;
         }
       }
       return null;
     };
 
-    const updateTooltip = () => {
-      const addFilesButton = findAddFilesButton();
+    const showTooltip = (target: HTMLElement) => {
+      activeTarget = target;
+      const rect = target.getBoundingClientRect();
+      tooltip.style.left = `${rect.left + rect.width / 2}px`;
+      tooltip.style.top = `${rect.top}px`;
+      tooltip.dataset.show = "true";
+    };
 
-      if (addFilesButton) {
-        addFilesButton.setAttribute("data-tooltip", "Add files");
-        addFilesButton.setAttribute("title", "Add files");
-        addFilesButton.setAttribute("aria-label", "Add files");
+    const hideTooltip = () => {
+      activeTarget = null;
+      tooltip.dataset.show = "false";
+    };
+
+    const updateTooltip = () => {
+      if (!activeTarget) {
+        return;
       }
+      showTooltip(activeTarget);
+    };
+
+    const handlePointerOver = (event: PointerEvent) => {
+      const target = findTargetFromEvent(event);
+      if (!target) {
+        return;
+      }
+      target.setAttribute("title", "Add files");
+      target.setAttribute("aria-label", "Add files");
+      showTooltip(target);
+    };
+
+    const handlePointerOut = (event: PointerEvent) => {
+      if (!activeTarget) {
+        return;
+      }
+      const related = event.relatedTarget as Node | null;
+      if (related && activeTarget.contains(related)) {
+        return;
+      }
+      hideTooltip();
     };
 
     const updateStartScreen = () => {
@@ -161,15 +186,26 @@ export function ChatKitPanel() {
     };
 
     const updateUi = () => {
-      updateTooltip();
       updateStartScreen();
+      updateTooltip();
     };
 
     updateUi();
     const observer = new MutationObserver(updateUi);
     observer.observe(container, { childList: true, subtree: true });
+    document.addEventListener("pointerover", handlePointerOver, true);
+    document.addEventListener("pointerout", handlePointerOut, true);
+    window.addEventListener("scroll", updateTooltip, true);
+    window.addEventListener("resize", updateTooltip);
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("pointerover", handlePointerOver, true);
+      document.removeEventListener("pointerout", handlePointerOut, true);
+      window.removeEventListener("scroll", updateTooltip, true);
+      window.removeEventListener("resize", updateTooltip);
+      tooltip.remove();
+    };
   }, []);
 
   return (
@@ -180,7 +216,7 @@ export function ChatKitPanel() {
       <div className="flex items-center gap-2 border-b border-[#303030] bg-[#303030] px-6 py-4 text-[#dcdcdc]">
         <div className="flex flex-col">
           <div className="text-[2.5rem] font-semibold leading-none">tidbit</div>
-          <div className="-mt-1 text-base font-normal">
+          <div className="mt-1 text-base font-normal">
             bite-sized news summaries
           </div>
         </div>

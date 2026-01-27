@@ -93,3 +93,26 @@ button[data-tooltip]:hover::before {
   font-size: 0.9rem;
   font-weight: 400;
 }
+
+.chatkit-tooltip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -8px);
+  background: #111111;
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1;
+  padding: 6px 8px;
+  border-radius: 9999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease, transform 120ms ease;
+  z-index: 9999;
+  white-space: nowrap;
+}
+
+.chatkit-tooltip[data-show="true"] {
+  opacity: 1;
+  transform: translate(-50%, -12px);
+}
