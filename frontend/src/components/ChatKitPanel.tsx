@@ -12,7 +12,8 @@ import {
   setStoredThreadId,
 } from "../lib/session";
 
-const GREETING = "Get a concise summary and key topics instantly.";
+const GREETING =
+  "Share an article or document. Get a concise summary and key topics instantly.";
 const SUBLINE = "Supports news links, PDFs, and Word documents";
 
 const baseOptions: ChatKitOptions = {
