@@ -25,7 +25,7 @@ const baseOptions: ChatKitOptions = {
     radius: "pill",
     density: "normal",
     typography: {
-      baseSize: 30,
+      baseSize: 18,
       fontFamily:
         '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
       fontFamilyMono:
@@ -95,6 +95,9 @@ export function ChatKitPanel() {
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-white transition-colors dark:bg-slate-900">
+      <div className="flex items-center gap-2 border-b border-slate-200 px-6 py-4 text-2xl font-semibold text-slate-900 dark:border-slate-800 dark:text-slate-100">
+        tidbit
+      </div>
       <ChatKit control={chatkit.control} className="block h-full w-full" />
     </div>
   );
