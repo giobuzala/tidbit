@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, AsyncIterator
 
-from agents import Runner
+from agents import RunConfig, Runner
 from chatkit.agents import AgentContext, simple_to_agent_input, stream_agent_response
 from chatkit.server import ChatKitServer
 from chatkit.types import ThreadMetadata, ThreadStreamEvent, UserMessageItem
@@ -112,6 +112,12 @@ class StarterChatServer(ChatKitServer[dict[str, Any]]):
             media_summary_agent,
             agent_input,
             context=agent_context,
+            run_config=RunConfig(
+                trace_metadata={
+                    "__trace_source__": "agent-builder",
+                    "workflow_id": "wf_6977fe4bcf008190a19ff4780cdb706f00b7eba8aba4afa0",
+                }
+            ),
         )
 
         async for event in stream_agent_response(agent_context, result):
