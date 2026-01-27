@@ -112,17 +112,27 @@ export function ChatKitPanel() {
 
     let activeTarget: HTMLElement | null = null;
 
-    const isAddFilesTarget = (element: HTMLElement) => {
-      const label =
-        element.getAttribute("aria-label") ?? element.getAttribute("title") ?? "";
-      return label.toLowerCase().includes("add files");
+    const isAddFilesButton = (element: HTMLElement) => {
+      if (element.tagName !== "BUTTON") {
+        return false;
+      }
+      const hasGhostVariant = element.getAttribute("data-variant") === "ghost";
+      const hasPrimaryColor = element.getAttribute("data-color") === "primary";
+      const hasSvg = element.querySelector("svg") !== null;
+      return hasGhostVariant && hasPrimaryColor && hasSvg;
     };
 
     const findTargetFromEvent = (event: Event) => {
       const path = event.composedPath ? event.composedPath() : [];
       for (const node of path) {
-        if (node instanceof HTMLElement && isAddFilesTarget(node)) {
-          return node;
+        if (node instanceof HTMLElement) {
+          if (isAddFilesButton(node)) {
+            return node;
+          }
+          const button = node.closest?.("button");
+          if (button instanceof HTMLElement && isAddFilesButton(button)) {
+            return button;
+          }
         }
       }
       return null;
@@ -153,8 +163,6 @@ export function ChatKitPanel() {
       if (!target) {
         return;
       }
-      target.setAttribute("title", "Add files");
-      target.setAttribute("aria-label", "Add files");
       showTooltip(target);
     };
 
