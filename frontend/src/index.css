@@ -34,7 +34,7 @@ body,
 }
 
 body {
-  background: #0f172a;
+  background: #212121;
   color: var(--foreground);
   font-family: var(--font-sans);
 }
