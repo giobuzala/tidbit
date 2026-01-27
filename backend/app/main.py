@@ -40,17 +40,28 @@ async def chatkit_endpoint(request: Request) -> Response:
 
 @app.post("/files")
 async def upload_file(file: UploadFile = File(...)) -> Response:
-    """Direct upload endpoint for PDF attachments."""
+    """Direct upload endpoint for PDF/Word attachments."""
     filename = file.filename or "document.pdf"
-    if file.content_type != "application/pdf" and not filename.lower().endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Only PDF uploads are supported.")
+    allowed_types = {
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/msword",
+    }
+    allowed_extensions = (".pdf", ".docx", ".doc")
+    if (
+        file.content_type not in allowed_types
+        and not filename.lower().endswith(allowed_extensions)
+    ):
+        raise HTTPException(
+            status_code=400, detail="Only PDF or Word uploads are supported."
+        )
 
     content = await file.read()
     attachment_id = f"att_{uuid4().hex}"
     attachment = FileAttachment(
         id=attachment_id,
         name=filename,
-        mime_type="application/pdf",
+        mime_type=file.content_type or "application/octet-stream",
     )
 
     await chatkit_server.store.save_attachment_bytes(attachment_id, content)

@@ -144,10 +144,15 @@ class StarterThreadItemConverter(ThreadItemConverter):
         self, attachment: Attachment
     ) -> ResponseInputFileParam:
         content = await self.store.load_attachment_bytes(attachment.id)
-        if attachment.mime_type != "application/pdf":
-            raise ValueError("Only PDF attachments are supported.")
+        allowed_types = {
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/msword",
+        }
+        if attachment.mime_type not in allowed_types:
+            raise ValueError("Only PDF or Word attachments are supported.")
         return ResponseInputFileParam(
             type="input_file",
             file_data=_as_data_url(attachment.mime_type, content),
-            filename=attachment.name or "document.pdf",
+            filename=attachment.name or "document",
         )

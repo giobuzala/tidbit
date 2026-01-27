@@ -43,9 +43,13 @@ const options: ChatKitOptions = {
       enabled: true,
       accept: {
         "application/pdf": [".pdf"],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+          ".docx",
+        ],
+        "application/msword": [".doc"],
       },
       maxCount: 5,
-      maxSize: 10485760,
+      maxSize: 26214400,
     },
   },
   startScreen: {
