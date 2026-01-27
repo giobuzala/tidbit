@@ -42,7 +42,8 @@ const baseOptions: ChatKitOptions = {
     },
   },
   composer: {
-    placeholder: "Drop a news article link or document here",
+    placeholder:
+      "Drop a news article link or document here, or attach it using the + on the left.",
     attachments: {
       enabled: true,
       accept: {
@@ -58,7 +59,7 @@ const baseOptions: ChatKitOptions = {
   },
   startScreen: {
     greeting:
-      "Share an article or document and I’ll summarize it and extract keywords.",
+      "Share an article or document. I’ll summarize it and extract keywords.",
     prompts: [],
   },
   history: {
