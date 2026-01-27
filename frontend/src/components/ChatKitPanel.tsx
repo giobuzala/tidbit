@@ -5,8 +5,13 @@ import {
   CHATKIT_API_UPLOAD_URL,
   CHATKIT_API_URL,
 } from "../lib/config";
+import {
+  getOrCreateSessionId,
+  getStoredThreadId,
+  setStoredThreadId,
+} from "../lib/session";
 
-const options: ChatKitOptions = {
+const baseOptions: ChatKitOptions = {
   api: {
     url: CHATKIT_API_URL,
     domainKey: CHATKIT_API_DOMAIN_KEY,
@@ -57,10 +62,31 @@ const options: ChatKitOptions = {
       "Share an article or document and I’ll summarize it and extract keywords.",
     prompts: [],
   },
+  history: {
+    enabled: true,
+    showDelete: true,
+    showRename: true,
+  },
 };
 
 export function ChatKitPanel() {
-  const chatkit = useChatKit(options);
+  const sessionId = getOrCreateSessionId();
+  const initialThread = getStoredThreadId();
+  const chatkit = useChatKit({
+    ...baseOptions,
+    initialThread,
+    api: {
+      ...baseOptions.api,
+      fetch: (input, init) => {
+        const headers = new Headers(init?.headers);
+        headers.set("x-tidbit-session", sessionId);
+        return fetch(input, { ...init, headers });
+      },
+    },
+    onThreadChange: ({ threadId }) => {
+      setStoredThreadId(threadId ?? null);
+    },
+  });
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden bg-white transition-colors dark:bg-slate-900">

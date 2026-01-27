@@ -24,12 +24,18 @@ app.add_middleware(
 
 chatkit_server = StarterChatServer()
 
+SESSION_HEADER = "x-tidbit-session"
+
+
+def _request_context(request: Request) -> dict:
+    return {"request": request, "session_id": request.headers.get(SESSION_HEADER)}
+
 
 @app.post("/chatkit")
 async def chatkit_endpoint(request: Request) -> Response:
     """Proxy the ChatKit web component payload to the server implementation."""
     payload = await request.body()
-    result = await chatkit_server.process(payload, {"request": request})
+    result = await chatkit_server.process(payload, _request_context(request))
 
     if isinstance(result, StreamingResult):
         return StreamingResponse(result, media_type="text/event-stream")
@@ -39,7 +45,7 @@ async def chatkit_endpoint(request: Request) -> Response:
 
 
 @app.post("/files")
-async def upload_file(file: UploadFile = File(...)) -> Response:
+async def upload_file(request: Request, file: UploadFile = File(...)) -> Response:
     """Direct upload endpoint for PDF/Word attachments."""
     filename = file.filename or "document.pdf"
     allowed_types = {
@@ -65,6 +71,8 @@ async def upload_file(file: UploadFile = File(...)) -> Response:
     )
 
     await chatkit_server.store.save_attachment_bytes(attachment_id, content)
-    await chatkit_server.store.save_attachment(attachment, context={})
+    await chatkit_server.store.save_attachment(
+        attachment, context=_request_context(request)
+    )
 
     return Response(content=attachment.model_dump_json(), media_type="application/json")

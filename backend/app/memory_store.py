@@ -13,23 +13,31 @@ from chatkit.types import Attachment, Page, ThreadItem, ThreadMetadata
 
 class MemoryStore(Store[dict]):
     def __init__(self):
-        self.threads: dict[str, ThreadMetadata] = {}
-        self.items: dict[str, list[ThreadItem]] = defaultdict(list)
+        self.threads: dict[str, dict[str, ThreadMetadata]] = defaultdict(dict)
+        self.items: dict[str, dict[str, list[ThreadItem]]] = defaultdict(
+            lambda: defaultdict(list)
+        )
         self.attachments: dict[str, Attachment] = {}
         self.attachment_bytes: dict[str, bytes] = {}
 
+    def _session_id(self, context: dict) -> str:
+        return context.get("session_id") or "default"
+
     async def load_thread(self, thread_id: str, context: dict) -> ThreadMetadata:
-        if thread_id not in self.threads:
+        session_id = self._session_id(context)
+        if thread_id not in self.threads[session_id]:
             raise NotFoundError(f"Thread {thread_id} not found")
-        return self.threads[thread_id]
+        return self.threads[session_id][thread_id]
 
     async def save_thread(self, thread: ThreadMetadata, context: dict) -> None:
-        self.threads[thread.id] = thread
+        session_id = self._session_id(context)
+        self.threads[session_id][thread.id] = thread
 
     async def load_threads(
         self, limit: int, after: str | None, order: str, context: dict
     ) -> Page[ThreadMetadata]:
-        threads = list(self.threads.values())
+        session_id = self._session_id(context)
+        threads = list(self.threads[session_id].values())
         return self._paginate(
             threads,
             after,
@@ -42,7 +50,8 @@ class MemoryStore(Store[dict]):
     async def load_thread_items(
         self, thread_id: str, after: str | None, limit: int, order: str, context: dict
     ) -> Page[ThreadItem]:
-        items = self.items.get(thread_id, [])
+        session_id = self._session_id(context)
+        items = self.items[session_id].get(thread_id, [])
         return self._paginate(
             items,
             after,
@@ -55,10 +64,12 @@ class MemoryStore(Store[dict]):
     async def add_thread_item(
         self, thread_id: str, item: ThreadItem, context: dict
     ) -> None:
-        self.items[thread_id].append(item)
+        session_id = self._session_id(context)
+        self.items[session_id][thread_id].append(item)
 
     async def save_item(self, thread_id: str, item: ThreadItem, context: dict) -> None:
-        items = self.items[thread_id]
+        session_id = self._session_id(context)
+        items = self.items[session_id][thread_id]
         for idx, existing in enumerate(items):
             if existing.id == item.id:
                 items[idx] = item
@@ -68,20 +79,25 @@ class MemoryStore(Store[dict]):
     async def load_item(
         self, thread_id: str, item_id: str, context: dict
     ) -> ThreadItem:
-        for item in self.items.get(thread_id, []):
+        session_id = self._session_id(context)
+        for item in self.items[session_id].get(thread_id, []):
             if item.id == item_id:
                 return item
         raise NotFoundError(f"Item {item_id} not found in thread {thread_id}")
 
     async def delete_thread(self, thread_id: str, context: dict) -> None:
-        self.threads.pop(thread_id, None)
-        self.items.pop(thread_id, None)
+        session_id = self._session_id(context)
+        self.threads[session_id].pop(thread_id, None)
+        self.items[session_id].pop(thread_id, None)
 
     async def delete_thread_item(
         self, thread_id: str, item_id: str, context: dict
     ) -> None:
-        self.items[thread_id] = [
-            item for item in self.items.get(thread_id, []) if item.id != item_id
+        session_id = self._session_id(context)
+        self.items[session_id][thread_id] = [
+            item
+            for item in self.items[session_id].get(thread_id, [])
+            if item.id != item_id
         ]
 
     def _paginate(
