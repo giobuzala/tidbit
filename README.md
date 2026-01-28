@@ -1,79 +1,93 @@
-# ChatKit Starter
+# [tidbit](https://tidbit.pages.dev/)
 
-Minimal Vite + React UI paired with a FastAPI backend that forwards chat
-requests to OpenAI through the ChatKit server library.
+An AI-powered chatbot for summarizing news articles and extracting key topics.
 
-## Quick start
+## Overview
+
+tidbit is a chat-based web application for quickly digesting news articles using OpenAI's GPT-4.1 model.
+
+It is designed for readers, researchers, and media analysts who want to extract essential information from articles without reading them in full, while preserving the original headline and key themes.
+
+The interface supports multiple input formats: paste a URL, drop in a PDF or Word document, or copy-paste the article text directly. Each input returns a structured summary with five keywords.
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | React, TypeScript, Vite, Tailwind CSS |
+| Backend | Python, FastAPI |
+| AI | OpenAI GPT-4.1 via ChatKit |
+| Hosting | Cloudflare Pages (frontend), Render (backend) |
+
+## Quick Start
 
 ```bash
+# Install dependencies
 npm install
+
+# Set your OpenAI API key
+cp .env.example .env.local
+# Edit .env.local with your OPENAI_API_KEY
+
+# Run both frontend and backend
 npm run dev
 ```
 
-What happens:
+The app will be available at `http://localhost:3000`.
 
-- `npm run dev` starts the FastAPI backend on `127.0.0.1:8000` and the Vite
-  frontend on `127.0.0.1:3000` with a proxy at `/chatkit`.
+## Environment Variables
 
-## Required environment
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `OPENAI_API_KEY` | Yes | Your OpenAI API key |
+| `VITE_CHATKIT_API_URL` | No | Backend URL (defaults to `/chatkit`) |
+| `VITE_CHATKIT_API_DOMAIN_KEY` | No | ChatKit domain key (defaults to localhost dev key) |
 
-- `OPENAI_API_KEY` (backend)
-- `VITE_CHATKIT_API_URL` (optional, defaults to `/chatkit`)
-- `VITE_CHATKIT_API_DOMAIN_KEY` (optional, defaults to `domain_pk_localhost_dev`)
+## Deployment
 
-Set `OPENAI_API_KEY` in your shell or in `.env.local` at the repo root before
-running the backend. Register a production domain key in the OpenAI dashboard
-and set `VITE_CHATKIT_API_DOMAIN_KEY` when deploying.
+### Backend (Render)
 
-## Deploy (Render + Cloudflare Pages)
+1. Create a Web Service on Render
+2. Set root directory to `backend`
+3. Build command: `pip install -e .`
+4. Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+5. Add `OPENAI_API_KEY` environment variable
 
-This repo is set up to deploy as:
+### Frontend (Cloudflare Pages)
 
-- **Backend**: Render (FastAPI) → serves `POST /chatkit`
-- **Frontend**: Cloudflare Pages (Vite build) → serves the React app
+1. Create a Pages project from your repo
+2. Set root directory to `frontend`
+3. Build command: `npm install && npm run build`
+4. Output directory: `dist`
+5. Add environment variables:
+   - `VITE_CHATKIT_API_URL` → your Render backend URL + `/chatkit`
+   - `VITE_CHATKIT_API_DOMAIN_KEY` → from [OpenAI Domain Allowlist](https://platform.openai.com/settings/organization/security/domain-allowlist)
 
-### 1) Backend on Render
+## Project Structure
 
-Create a **Web Service** on Render:
+```
+tidbit/
+├── frontend/          # React app
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── ChatKitPanel.tsx
+│   │   ├── lib/
+│   │   │   ├── config.ts
+│   │   │   └── session.ts
+│   │   ├── App.tsx
+│   │   ├── main.tsx
+│   │   └── index.css
+│   └── package.json
+├── backend/           # FastAPI server
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── server.py
+│   │   └── memory_store.py
+│   └── pyproject.toml
+├── .env.example
+└── package.json       # Root scripts
+```
 
-- **Root Directory**: `backend`
-- **Build Command**: `pip install -e .`
-- **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-- **Env vars**:
-  - `OPENAI_API_KEY=...`
+## License
 
-After deploy you’ll have a backend URL like `https://<your-service>.onrender.com`.
-Your ChatKit endpoint will be:
-
-- `https://<your-service>.onrender.com/chatkit`
-
-Note: Render’s free tier may sleep on inactivity, so the first request can be slow.
-
-### 2) Frontend on Cloudflare Pages
-
-Create a **Pages** project from your Git repo:
-
-- **Framework preset**: React (Vite)
-- **Root directory**: `frontend`
-- **Build command**: `npm install && npm run build`
-- **Build output directory**: `dist`
-
-Set these **Environment variables** in Cloudflare Pages:
-
-- `VITE_CHATKIT_API_URL=https://<your-service>.onrender.com/chatkit`
-- `VITE_CHATKIT_API_DOMAIN_KEY=domain_pk_...`
-
-### 3) Domain allowlist (required for ChatKit UI)
-
-ChatKit requires domain verification in production. Once Cloudflare gives you a URL
-like `https://<your-project>.pages.dev`:
-
-1. Add `<your-project>.pages.dev` to the OpenAI **Domain allowlist**.
-2. Copy the generated `domain_pk_...` key.
-3. Paste it into Cloudflare Pages as `VITE_CHATKIT_API_DOMAIN_KEY` and redeploy.
-
-## Customize
-
-- Update UI and connection settings in `frontend/src/lib/config.ts`.
-- Adjust layout in `frontend/src/components/ChatKitPanel.tsx`.
-- Swap the in-memory store in `backend/app/server.py` for persistence.
+MIT
