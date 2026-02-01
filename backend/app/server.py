@@ -33,7 +33,7 @@ media_summary_agent = Agent[AgentContext[dict[str, Any]]](
         "input to analyze is provided.\n\n"
         "You will receive one or more inputs. Each input may be either:\n"
         "- a public news article URL,\n"
-        "- an uploaded text-based file (PDF, DOCX, or TXT), or\n"
+        "- an uploaded file (PDF or DOCX), or\n"
         "- plain text pasted directly into the conversation.\n\n"
         "For each input:\n"
         "1. If a URL is provided, open the link.\n"
