@@ -10,7 +10,7 @@ It is designed for readers, researchers, and media analysts who want to extract 
 
 The interface supports multiple input formats: paste a URL, drop in a PDF or Word document, or copy-paste the article text directly. Each input returns a structured summary with five keywords.
 
-## Tech Stack
+## Tech stack
 
 | Layer | Technology |
 |-------|------------|
@@ -19,7 +19,7 @@ The interface supports multiple input formats: paste a URL, drop in a PDF or Wor
 | AI | OpenAI GPT-4.1 via ChatKit |
 | Hosting | Cloudflare Pages (frontend), Render (backend) |
 
-## Quick Start
+## Quick start
 
 ```bash
 # Install dependencies
@@ -35,7 +35,7 @@ npm run dev
 
 The app will be available at `http://localhost:3000`.
 
-## Environment Variables
+## Environment variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -63,7 +63,7 @@ The app will be available at `http://localhost:3000`.
    - `VITE_CHATKIT_API_URL` → your Render backend URL + `/chatkit`
    - `VITE_CHATKIT_API_DOMAIN_KEY` → from [OpenAI Domain Allowlist](https://platform.openai.com/settings/organization/security/domain-allowlist)
 
-## Project Structure
+## Project structure
 
 ```
 tidbit/
@@ -90,4 +90,4 @@ tidbit/
 
 ## License
 
-MIT
+MIT License
